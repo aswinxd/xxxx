@@ -70,6 +70,21 @@ async def get_thumb(videoid):
         background = image2.filter(filter=ImageFilter.BoxBlur(10))
         enhancer = ImageEnhance.Brightness(background)
         background = enhancer.enhance(0.5)
+
+        # Load the overlay image
+        overlay = Image.open("path/to/overlay.png")
+        # Resize it to match the thumbnail size
+        overlay = overlay.resize(image1.size)
+        # Set transparency level (adjust as needed)
+        overlay = overlay.convert("RGBA")
+        overlay = ImageEnhance.Brightness(overlay).enhance(0.7)  # Adjust transparency here
+
+        # Paste thumbnail onto the overlay
+        overlay.paste(image1, (0, 0), image1)
+
+        # Paste the overlay onto the background
+        background.paste(overlay, (0, 0), overlay)
+
         draw = ImageDraw.Draw(background)
         arial = ImageFont.truetype("AnonXMusic/assets/font2.ttf", 30)
         font = ImageFont.truetype("AnonXMusic/assets/font.ttf", 30)
@@ -110,6 +125,7 @@ async def get_thumb(videoid):
             (255, 255, 255),
             font=arial,
         )
+
         try:
             os.remove(f"cache/thumb{videoid}.png")
         except:
