@@ -72,7 +72,7 @@ async def get_thumb(videoid):
         background = enhancer.enhance(0.5)
 
         # Load the overlay image
-        overlay = Image.open("path/to/overlay.png")
+        overlay = Image.open("AnonXMusic/powered by.png")
         # Resize it to match the thumbnail size
         overlay = overlay.resize(image1.size)
         # Set transparency level (adjust as needed)
