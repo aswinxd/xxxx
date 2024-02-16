@@ -29,8 +29,6 @@ HELP_2 = """
 ×/stop : 𝖢𝗅𝖾𝖺𝗋𝗌 𝖳𝗁𝖾 𝖰𝗎𝖾𝗎𝖾 𝖠𝗇𝖽 𝖤𝗇𝖽 𝖳𝗁𝖾 𝖢𝗎𝗋𝗋𝖾𝗇𝗍 𝖯𝗅𝖺𝗒𝗂𝗇𝗀 𝖲𝗍𝗋𝖾𝖺𝗆 .
 ×/shuffle : 𝖲𝗁𝗎𝖿𝖿𝗅𝖾'𝗌 𝖳𝗁𝖾 𝖰𝗎𝖾𝗎𝖾 .
 ×/reboot : If you face any bugs on your group use this command.
-
-🗯️If you have any doubts Ask at support chat. @X1botchat.
 """
 HELP_3 = """
 <b><u>Only Works in Groups:</b></u>
@@ -46,6 +44,4 @@ HELP_3 = """
 3, Playmode : To open playmode settings in your group. Click The function name to open help window about Button.
 
 4, Voting : When voting mode is enabled users without admin rights can use admin commands via voting. click voting buttons to open help window about button.
-
-🗯️If you have any doubts Ask at support chat. @X1botchat.
 """
