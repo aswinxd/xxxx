@@ -1,6 +1,6 @@
 import math
 import asyncio
-from pyrogram.types import InlineKeyboardButton
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from AnonXMusic.utils.formatters import time_to_seconds
 
 async def stream_markup_timer(_, chat_id, played_time, duration):
@@ -24,6 +24,7 @@ async def stream_markup_timer(_, chat_id, played_time, duration):
                 text=f"{progress_bar} {current_time:.2f}%",
                 callback_data=f"ADMIN Skip|{chat_id}",
             ),
+            InlineKeyboardButton(text="Pause ⏸️", callback_data=f"ADMIN Pause|{chat_id}"),
             InlineKeyboardButton(text="Stop 🔇", callback_data=f"ADMIN Stop|{chat_id}"),
         ],
         [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close ❌")],
@@ -55,8 +56,10 @@ def stream_markup(_, chat_id):
     buttons = [
         [
             InlineKeyboardButton(text="Skip ▶️", callback_data=f"ADMIN Skip|{chat_id}"),
+            InlineKeyboardButton(text="Pause ⏸️", callback_data=f"ADMIN Pause|{chat_id}"),
             InlineKeyboardButton(text="Stop 🔇", callback_data=f"ADMIN Stop|{chat_id}"),
         ],
+        [InlineKeyboardButton(text="Settings ⚙️", callback_data=f"SETTINGS|{chat_id}")],
         [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close ❌")],
     ]
     return buttons
@@ -119,6 +122,19 @@ def slider_markup(_, videoid, user_id, query, query_type, channel, fplay):
                 text="Next⏭️",
                 callback_data=f"slider F|{query_type}|{query}|{user_id}|{channel}|{fplay}",
             ),
+        ],
+    ]
+    return buttons
+
+def settings_markup(_, chat_id):
+    buttons = [
+        [
+            InlineKeyboardButton(text="Pause ⏸️", callback_data=f"ADMIN Pause|{chat_id}"),
+            InlineKeyboardButton(text="Resume ▶️", callback_data=f"ADMIN Resume|{chat_id}"),
+        ],
+        [
+            InlineKeyboardButton(text="Skip ⏭️", callback_data=f"ADMIN Skip|{chat_id}"),
+            InlineKeyboardButton(text="End 🔇", callback_data=f"ADMIN Stop|{chat_id}"),
         ],
     ]
     return buttons
