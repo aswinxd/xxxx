@@ -86,18 +86,6 @@ async def restartbot(client, message: Message, _):
     return await mystic.edit_text(_["reload_5"].format(app.mention))
 
 
-@app.on_callback_query(filters.regex("close") & ~BANNED_USERS)
-async def close_menu(_, query: CallbackQuery):
-    try:
-        await query.answer()
-        await query.message.delete()
-        umm = await query.message.reply_text(
-            f"Cʟᴏsᴇᴅ ʙʏ : {query.from_user.mention}"
-        )
-        await asyncio.sleep(7)
-        await umm.delete()
-    except:
-        pass
 
 
 @app.on_callback_query(filters.regex("stop_downloading") & ~BANNED_USERS)
