@@ -1,4 +1,5 @@
 import asyncio
+import importlib
 
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -6,20 +7,19 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from AnonXMusic import YouTube, app
 from AnonXMusic.core.call import Anony
 from AnonXMusic.misc import SUDOERS, db
-from AnonXMusic.utils.database import (
-    get_active_chats,
-    get_lang,
-    get_upvote_count,
-    is_active_chat,
-    is_music_playing,
-    is_nonadmin_chat,
-    music_off,
-    music_on,
-    set_loop,
-)
+from AnonXMusic.utils.database import get_active_chats, get_lang, get_upvote_count, is_active_chat, is_music_playing, \
+    is_nonadmin_chat, music_off, music_on, set_loop
 from AnonXMusic.utils.decorators.language import languageCB
 from AnonXMusic.utils.formatters import seconds_to_min
-from AnonXMusic.utils.inline import close_markup, stream_markup
+from AnonXMusic.utils.inline import close_markup, stream_markup, stream_markup_timer
+from AnonXMusic.utils.stream.autoclear import auto_clean
+from AnonXMusic.utils.thumbnails import get_thumb
+from config import BANNED_USERS, SOUNCLOUD_IMG_URL, STREAM_IMG_URL, TELEGRAM_AUDIO_URL, TELEGRAM_VIDEO_URL, adminlist, \
+    confirmer, votemode
+from strings import get_string
+
+checker = {}
+upvoters = {}
 
 
 @app.on_callback_query(filters.regex("ADMIN") & ~filters.user(SUDOERS))
@@ -42,21 +42,21 @@ async def del_back_playlist(client, CallbackQuery, _):
         if chat_id not in upvoters:
             upvoters[chat_id] = {}
 
-        voters = upvoters[chat_id].get(CallbackQuery.message.id)
+        voters = (upvoters[chat_id]).get(CallbackQuery.message.id)
         if not voters:
             upvoters[chat_id][CallbackQuery.message.id] = []
 
-        vote = votemode[chat_id].get(CallbackQuery.message.id)
+        vote = (votemode[chat_id]).get(CallbackQuery.message.id)
         if not vote:
             votemode[chat_id][CallbackQuery.message.id] = 0
 
         if CallbackQuery.from_user.id in upvoters[chat_id][CallbackQuery.message.id]:
-            upvoters[chat_id][CallbackQuery.message.id].remove(
+            (upvoters[chat_id][CallbackQuery.message.id]).remove(
                 CallbackQuery.from_user.id
             )
             votemode[chat_id][CallbackQuery.message.id] -= 1
         else:
-            upvoters[chat_id][CallbackQuery.message.id].append(
+            (upvoters[chat_id][CallbackQuery.message.id]).append(
                 CallbackQuery.from_user.id
             )
             votemode[chat_id][CallbackQuery.message.id] += 1
@@ -188,7 +188,7 @@ async def del_back_playlist(client, CallbackQuery, _):
         videoid = check[0]["vidid"]
         status = True if str(streamtype) == "video" else None
         db[chat_id][0]["played"] = 0
-        exis = check[0].get("old_dur")
+        exis = (check[0]).get("old_dur")
         if exis:
             db[chat_id][0]["dur"] = exis
             db[chat_id][0]["seconds"] = check[0]["old_second"]
@@ -331,49 +331,128 @@ async def del_back_playlist(client, CallbackQuery, _):
                 db[chat_id][0]["mystic"] = run
                 db[chat_id][0]["markup"] = "stream"
             await CallbackQuery.edit_message_text(txt, reply_markup=close_markup(_))
-
-
-async def markup_timer():
-    while not await asyncio.sleep(7):
-        active_chats = await get_active_chats()
-        for chat_id in active_chats:
-            try:
-                if not await is_music_playing(chat_id):
-                    continue
-                playing = db.get(chat_id)
-                if not playing:
-                    continue
-                duration_seconds = int(playing[0]["seconds"])
-                played = int(playing[0]["played"])
-                markup_time = played / duration_seconds * 100
-                reply_markup = InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                f"🔊 {int(markup_time)}%",
-                                callback_data=" ",
-                            )
-                        ]
-                    ]
+    elif command == "Seek":
+        sec = int(callback_data.split("_")[1])
+        await Anony.seek_stream(chat_id, sec)
+        await CallbackQuery.answer()
+    elif command == "Pause" or command == "Resume":
+        await CallbackQuery.answer(_["admin_15"], show_alert=True)
+    elif command == "Clear":
+        if not await is_music_playing(chat_id):
+            return await CallbackQuery.answer(_["admin_8"], show_alert=True)
+        db[chat_id].clear()
+        await CallbackQuery.answer(_["admin_9"], show_alert=True)
+        await Anony.stop_stream(chat_id)
+        await set_loop(chat_id, 0)
+        await CallbackQuery.message.reply_text(
+            _["admin_10"].format(mention), reply_markup=close_markup(_)
+        )
+        await CallbackQuery.message.delete()
+    elif command == "Leave":
+        await CallbackQuery.message.chat.leave()
+    elif command == "Loop":
+        if db[chat_id][0]["loop"] == "off":
+            db[chat_id][0]["loop"] = "one"
+            await CallbackQuery.answer(_["admin_17"].format(mention), show_alert=True)
+        elif db[chat_id][0]["loop"] == "one":
+            db[chat_id][0]["loop"] = "all"
+            await CallbackQuery.answer(_["admin_18"].format(mention), show_alert=True)
+        else:
+            db[chat_id][0]["loop"] = "off"
+            await CallbackQuery.answer(_["admin_19"].format(mention), show_alert=True)
+    elif command == "Help":
+        if not db.get(chat_id):
+            db[chat_id] = [{"loop": "off", "played": 0}]
+        await CallbackQuery.message.reply_text(
+            _["admin_20"].format(mention, config.SUPPORT_CHAT),
+            reply_markup=close_markup(_),
+        )
+    elif command == "Settings":
+        if not db.get(chat_id):
+            db[chat_id] = [{"loop": "off", "played": 0}]
+        current = db[chat_id][0]
+        status = _("admin_25").format(current["loop"].capitalize())
+        await CallbackQuery.message.reply_text(
+            _["admin_26"].format(mention, status), reply_markup=close_markup(_)
+        )
+    elif command == "Ping":
+        await CallbackQuery.answer(_["admin_27"].format(CallbackQuery.from_user.id))
+    elif command == "Restart":
+        await CallbackQuery.answer(_["admin_28"], show_alert=True)
+        await Anony.restart()
+    elif command == "Stats":
+        if not await is_music_playing(chat_id):
+            return await CallbackQuery.answer(_["admin_29"], show_alert=True)
+        player = db.get(chat_id)
+        if not player:
+            return await CallbackQuery.answer(_["admin_30"], show_alert=True)
+        current = player[0]
+        uptime = await Anony.get_uptime(chat_id)
+        loop = current["loop"].capitalize()
+        playtime = await Anony.get_playtime(chat_id)
+        duration = current.get("dur")
+        if duration:
+            duration = seconds_to_min(duration)
+        else:
+            duration = "N/A"
+        text = _["admin_31"].format(
+            mention, loop, playtime, duration, uptime
+        )
+        await CallbackQuery.message.reply_text(
+            text, reply_markup=close_markup(_)
+        )
+    elif command == "Speed":
+        speed = float(callback_data.split("_")[1])
+        await Anony.change_speed(chat_id, speed)
+        await CallbackQuery.answer()
+    elif command == "Delete":
+        check = db.get(chat_id)
+        if not check:
+            return await CallbackQuery.answer(_["admin_32"], show_alert=True)
+        player = check[0]
+        popped = None
+        try:
+            popped = check.pop(0)
+            if popped:
+                await auto_clean(popped)
+            if not check:
+                await CallbackQuery.edit_message_text(
+                    f"Stream Deleted"
                 )
-                if playing[0]["markup"] == "stream":
-                    if playing[0]["mystic"] == "message":
-                        pass
-                    else:
-                        await playing[0]["mystic"].edit_reply_markup(reply_markup)
-                else:
-                    if playing[0]["mystic"] == "message":
-                        await app.edit_message_reply_markup(
-                            chat_id,
-                            playing[0]["mystic"],
-                            reply_markup=reply_markup,
-                        )
-                    else:
-                        await app.edit_message_reply_markup(
-                            chat_id,
-                            playing[0]["mystic"].message_id,
-                            reply_markup=reply_markup,
-                        )
-            except Exception as e:
-                print(e)
-                continue
+                await CallbackQuery.message.reply_text(
+                    text=_["admin_33"].format(
+                        mention, CallbackQuery.message.chat.title
+                    ),
+                    reply_markup=close_markup(_),
+                )
+                try:
+                    return await Anony.stop_stream(chat_id)
+                except:
+                    return
+        except:
+            try:
+                await CallbackQuery.edit_message_text(
+                    f"Stream Deleted"
+                )
+                await CallbackQuery.message.reply_text(
+                    text=_["admin_33"].format(
+                        mention, CallbackQuery.message.chat.title
+                    ),
+                    reply_markup=close_markup(_),
+                )
+                return await Anony.stop_stream(chat_id)
+            except:
+                return
+    elif command == "Reload":
+        module_name = f"AnonXMusic.plugins.{chat_id}"
+        try:
+            importlib.reload(importlib.import_module(module_name))
+            await CallbackQuery.answer(_["admin_34"], show_alert=True)
+        except Exception as e:
+            await CallbackQuery.answer(str(e), show_alert=True)
+    else:
+        return await CallbackQuery.answer(
+            _["admin_41"].format(command), show_alert=True
+        )
+
+
