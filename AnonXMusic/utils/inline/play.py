@@ -24,7 +24,6 @@ async def stream_markup_timer(_, chat_id, played_time, duration):
                 text=f"{progress_bar} {current_time:.2f}%",
                 callback_data=f"ADMIN Skip|{chat_id}",
             ),
-            InlineKeyboardButton(text="Pause ⏸️", callback_data=f"ADMIN Pause|{chat_id}"),
             InlineKeyboardButton(text="Stop 🔇", callback_data=f"ADMIN Stop|{chat_id}"),
         ],
         [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close ❌")],
