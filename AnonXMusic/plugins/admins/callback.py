@@ -350,8 +350,7 @@ async def del_back_playlist(client, CallbackQuery, _):
 
 
 async def markup_timer():
-    while True:  # Removed await from asyncio.sleep()
-        await asyncio.sleep(7)
+    while not await asyncio.sleep(7):
         active_chats = await get_active_chats()
         for chat_id in active_chats:
             try:
@@ -368,12 +367,18 @@ async def markup_timer():
                 except:
                     continue
                 try:
+                    check = checker[chat_id][mystic.id]
+                    if check is False:
+                        continue
+                except:
+                    pass
+                try:
                     language = await get_lang(chat_id)
                     _ = get_string(language)
                 except:
                     _ = get_string("en")
                 try:
-                    buttons = await stream_markup_timer(
+                    buttons = stream_markup_timer(
                         _,
                         chat_id,
                         seconds_to_min(playing[0]["played"]),
@@ -382,11 +387,9 @@ async def markup_timer():
                     await mystic.edit_reply_markup(
                         reply_markup=InlineKeyboardMarkup(buttons)
                     )
-                except Exception as e:
-                    print("Error in markup_timer:", e)  # Add logging here
+                except:
                     continue
-            except Exception as e:
-                print("Error in markup_timer:", e)  # Add logging here
+            except:
                 continue
 
 
