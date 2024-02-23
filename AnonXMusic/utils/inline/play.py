@@ -54,12 +54,10 @@ def track_markup(_, videoid, user_id, channel, fplay):
 def stream_markup(_, chat_id):
     buttons = [
         [
-            InlineKeyboardButton(text="Skip ▶️", callback_data=f"ADMIN Skip|{chat_id}"),
-            InlineKeyboardButton(text="Pause ⏸️", callback_data=f"ADMIN Pause|{chat_id}"),
-            InlineKeyboardButton(text="Stop 🔇", callback_data=f"ADMIN Stop|{chat_id}"),
+            InlineKeyboardButton(text="Queue 🎵", callback_data=f"QUEUE|{chat_id}"),
+            InlineKeyboardButton(text="Settings ⚙️", callback_data=f"SETTINGS|{chat_id}"),
         ],
-        [InlineKeyboardButton(text="Settings ⚙️", callback_data="SETTINGS")],  # Changed callback_data
-        [InlineKeyboardButton(text="Close ❌", callback_data="close ❌")],
+        [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close ❌")],
     ]
     return buttons
 
