@@ -57,7 +57,7 @@ def stream_markup(_, chat_id):
     buttons = [
         [
             InlineKeyboardButton(text="Skip ▶️", callback_data=f"ADMIN Skip|{chat_id}"),
-            InlineKeyboardButton(text="Queue", callback_data=f"GetQueued {CPLAY}|{videoid}"),
+            InlineKeyboardButton(text="Queue", callback_data=f"GetQueued"),
             InlineKeyboardButton(text="Stop 🔇", callback_data=f"ADMIN Stop|{chat_id}"),
         ],
         [InlineKeyboardButton(text="Settings ⚙️", callback_data=f"SETTINGS")],
