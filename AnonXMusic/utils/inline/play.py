@@ -57,8 +57,8 @@ def stream_markup(_, chat_id):
     buttons = [
         [
             InlineKeyboardButton(text="Skip ▶️", callback_data=f"ADMIN Skip|{chat_id}"),
-            InlineKeyboardButton(text="Queue", callback_data=f"help_callback hb1"),
             InlineKeyboardButton(text="Stop 🔇", callback_data=f"ADMIN Stop|{chat_id}"),
+            InlineKeyboardButton(text="MENU", callback_data=f"help_callback hb4"),
         ],
         [InlineKeyboardButton(text="Settings ⚙️", callback_data=f"PM")],
         [InlineKeyboardButton(text="Close ❌", callback_data="close ❌")],
@@ -102,11 +102,11 @@ def slider_markup(_, videoid, user_id, query, query_type, channel, fplay):
     buttons = [
         [
             InlineKeyboardButton(
-                text="Button 1",
+                text="audio",
                 callback_data=f"MusicStream {videoid}|{user_id}|a|{channel}|{fplay}",
             ),
             InlineKeyboardButton(
-                text="Button 2",
+                text="video",
                 callback_data=f"MusicStream {videoid}|{user_id}|v|{channel}|{fplay}",
             ),
         ],
