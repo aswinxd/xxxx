@@ -367,12 +367,6 @@ async def markup_timer():
                 except:
                     continue
                 try:
-                    check = checker[chat_id][mystic.id]
-                    if check is False:
-                        continue
-                except:
-                    pass
-                try:
                     language = await get_lang(chat_id)
                     _ = get_string(language)
                 except:
@@ -387,9 +381,11 @@ async def markup_timer():
                     await mystic.edit_reply_markup(
                         reply_markup=InlineKeyboardMarkup(buttons)
                     )
-                except:
+                except Exception as e:
+                    print("Error in markup_timer:", e)  # Add logging here
                     continue
-            except:
+            except Exception as e:
+                print("Error in markup_timer:", e)  # Add logging here
                 continue
 
 
