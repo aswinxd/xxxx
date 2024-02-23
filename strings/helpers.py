@@ -45,7 +45,7 @@ HELP_3 = """
 
 4, Voting : When voting mode is enabled users without admin rights can use admin commands via voting. click voting buttons to open help window about button.
 """
-HELP_2 = """
+HELP_4 = """
 <b><u>Stream controls :</b></u>
 ×/pause : 𝖯𝖺𝗎𝗌𝖾 𝖳𝗁𝖾 𝖢𝗎𝗋𝗋𝖾𝗇𝗍 𝖯𝗅𝖺𝗒𝗂𝗇𝗀 𝖲𝗍𝗋𝖾𝖺𝗆 .
 ×/resume : 𝖱𝖾𝗌𝗎𝗆𝖾 𝖳𝗁𝖾 𝖯𝖺𝗎𝗌𝖾𝖽 𝖲𝗍𝗋𝖾𝖺𝗆 .
