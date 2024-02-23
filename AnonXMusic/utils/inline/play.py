@@ -26,7 +26,7 @@ async def stream_markup_timer(_, chat_id, played_time, duration):
             ),
             InlineKeyboardButton(text="Stop 🔇", callback_data=f"ADMIN Stop|{chat_id}"),
         ],
-        [InlineKeyboardButton(text="Close ❌", callback_data="close ❌")],
+        [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close ❌")],
     ]
     return markup
 
@@ -34,17 +34,17 @@ def track_markup(_, videoid, user_id, channel, fplay):
     buttons = [
         [
             InlineKeyboardButton(
-                text="Button 1",  # Replace with appropriate text
+                text=_["P_B_1"],
                 callback_data=f"MusicStream {videoid}|{user_id}|a|{channel}|{fplay}",
             ),
             InlineKeyboardButton(
-                text="Button 2",  # Replace with appropriate text
+                text=_["P_B_2"],
                 callback_data=f"MusicStream {videoid}|{user_id}|v|{channel}|{fplay}",
             ),
         ],
         [
             InlineKeyboardButton(
-                text="Close ❌",  # Replace with appropriate text
+                text=_["CLOSE_BUTTON"],
                 callback_data=f"forceclose {videoid}|{user_id}",
             )
         ],
@@ -58,7 +58,7 @@ def stream_markup(_, chat_id):
             InlineKeyboardButton(text="Pause ⏸️", callback_data=f"ADMIN Pause|{chat_id}"),
             InlineKeyboardButton(text="Stop 🔇", callback_data=f"ADMIN Stop|{chat_id}"),
         ],
-        [InlineKeyboardButton(text="Settings ⚙️", callback_data=f"SETTINGS|{chat_id}")],
+        [InlineKeyboardButton(text="Settings ⚙️", callback_data="SETTINGS")],  # Changed callback_data
         [InlineKeyboardButton(text="Close ❌", callback_data="close ❌")],
     ]
     return buttons
@@ -67,17 +67,17 @@ def playlist_markup(_, videoid, user_id, ptype, channel, fplay):
     buttons = [
         [
             InlineKeyboardButton(
-                text="Button 1",  # Replace with appropriate text
+                text=_["P_B_1"],
                 callback_data=f"AnonyPlaylists {videoid}|{user_id}|{ptype}|a|{channel}|{fplay}",
             ),
             InlineKeyboardButton(
-                text="Button 2",  # Replace with appropriate text
+                text=_["P_B_2"],
                 callback_data=f"AnonyPlaylists {videoid}|{user_id}|{ptype}|v|{channel}|{fplay}",
             ),
         ],
         [
             InlineKeyboardButton(
-                text="Close ❌",  # Replace with appropriate text
+                text=_["CLOSE_BUTTON"],
                 callback_data=f"forceclose {videoid}|{user_id}",
             ),
         ],
@@ -88,7 +88,7 @@ def livestream_markup(_, videoid, user_id, mode, channel, fplay):
     buttons = [
         [
             InlineKeyboardButton(
-                text="Close ❌",  # Replace with appropriate text
+                text=_["CLOSE_BUTTON"],
                 callback_data=f"forceclose {videoid}|{user_id}",
             ),
         ],
@@ -100,11 +100,11 @@ def slider_markup(_, videoid, user_id, query, query_type, channel, fplay):
     buttons = [
         [
             InlineKeyboardButton(
-                text="Button 1",  # Replace with appropriate text
+                text=_["P_B_1"],
                 callback_data=f"MusicStream {videoid}|{user_id}|a|{channel}|{fplay}",
             ),
             InlineKeyboardButton(
-                text="Button 2",  # Replace with appropriate text
+                text=_["P_B_2"],
                 callback_data=f"MusicStream {videoid}|{user_id}|v|{channel}|{fplay}",
             ),
         ],
@@ -114,7 +114,7 @@ def slider_markup(_, videoid, user_id, query, query_type, channel, fplay):
                 callback_data=f"slider B|{query_type}|{query}|{user_id}|{channel}|{fplay}",
             ),
             InlineKeyboardButton(
-                text="Close ❌",  # Replace with appropriate text
+                text=_["CLOSE_BUTTON"],
                 callback_data=f"forceclose {query}|{user_id}",
             ),
             InlineKeyboardButton(
@@ -137,3 +137,22 @@ def settings_markup(_, chat_id):
         ],
     ]
     return buttons
+
+# Handle settings callback data
+async def handle_settings_callback(_, bot, update):
+    # Generate settings menu markup
+    chat_id = update.callback_query.message.chat.id
+    settings_markup = generate_settings_markup(_, chat_id)
+    # Send the settings menu as a new message
+    await bot.send_message(chat_id=chat_id, text="Settings", reply_markup=InlineKeyboardMarkup(settings_markup))
+
+# Handle callbacks
+async def on_callback_query(_, bot, update):
+    # Extract callback data
+    query_data = update.callback_query.data
+    if query_data == "SETTINGS":
+        # Handle settings callback
+        await handle_settings_callback(_, bot, update)
+    else:
+        # Handle other callbacks
+        await handle_other_callbacks(_, bot, update)
