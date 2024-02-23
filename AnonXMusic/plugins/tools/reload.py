@@ -91,7 +91,7 @@ async def close_menu(_, query: CallbackQuery):
         await query.answer()
         await query.message.delete()
         umm = await query.message.reply_text(
-            f"player closed"
+            f"Player Closed"
         )
         await asyncio.sleep(7)
         await umm.delete()
