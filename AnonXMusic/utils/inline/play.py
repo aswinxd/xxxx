@@ -1,6 +1,34 @@
 import math
+import asyncio
 from pyrogram.types import InlineKeyboardButton
 from AnonXMusic.utils.formatters import time_to_seconds
+
+async def stream_markup_timer(_, chat_id, played_time, duration):
+    duration = await time_to_seconds(duration)
+    played_time = await time_to_seconds(played_time)
+    if duration <= 0:
+        return [[]]
+
+    current_time = (played_time / duration) * 100
+    empty_progress = "▭"
+    filled_progress = "▬"
+
+    progress_bar_length = 15
+    progress_bar = filled_progress * round(current_time * progress_bar_length / 100) + empty_progress * (
+        progress_bar_length - round(current_time * progress_bar_length / 100)
+    )
+
+    markup = [
+        [
+            InlineKeyboardButton(
+                text=f"{progress_bar} {current_time:.2f}%",
+                callback_data=f"ADMIN Skip|{chat_id}",
+            ),
+            InlineKeyboardButton(text="Stop 🔇", callback_data=f"ADMIN Stop|{chat_id}"),
+        ],
+        [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close ❌")],
+    ]
+    return markup
 
 def track_markup(_, videoid, user_id, channel, fplay):
     buttons = [
