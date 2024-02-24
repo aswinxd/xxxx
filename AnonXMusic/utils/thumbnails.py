@@ -73,12 +73,12 @@ async def get_thumb(videoid):
         draw = ImageDraw.Draw(background)
         
         # Define larger font sizes for each text
-        powered_by_font = ImageFont.truetype("AnonXMusic/assets/font.ttf", 80)
-        arial = ImageFont.truetype("AnonXMusic/assets/font2.ttf", 60)  # Increase font size
-        font = ImageFont.truetype("AnonXMusic/assets/font.ttf", 60)  # Increase font size
+        powered_by_font = ImageFont.truetype("AnonXMusic/assets/font.ttf", 50)
+        arial = ImageFont.truetype("AnonXMusic/assets/font2.ttf", 50)  # Increase font size
+        font = ImageFont.truetype("AnonXMusic/assets/font.ttf", 50)  # Increase font size
         
         # Draw "Powered by YouTube" text on the top left corner
-        draw.text((20, 20), "Powered by YouTube", fill="white", font=powered_by_font)
+        draw.text((20, 20), "Powered by Xenon", fill="white", font=powered_by_font)
         
         draw.text((1110, 8), unidecode(app.name), fill="white", font=arial)
         draw.text(
