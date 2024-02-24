@@ -90,13 +90,12 @@ async def close_menu(_, query: CallbackQuery):
     try:
         await query.answer()
         await query.message.delete()
-        umm = await query.message.reply_text(
-            f"Player Closed"
-        )
+        # Remove the reply_text line
         await asyncio.sleep(7)
-        await umm.delete()
+        await query.message.delete()
     except:
         pass
+
 
 
 @app.on_callback_query(filters.regex("stop_downloading") & ~BANNED_USERS)
