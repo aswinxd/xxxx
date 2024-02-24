@@ -8,7 +8,7 @@ from AnonXMusic.utils import help_pannel
 from AnonXMusic.utils.database import get_lang
 from AnonXMusic.utils.decorators.language import LanguageStart, languageCB
 from AnonXMusic.utils.inline.help import help_back_markup, private_help_panel
-from config import BANNED_USERS, START_IMG_URL, SUPPORT_CHAT
+from config import BANNED_USERS, SUPPORT_CHAT
 from strings import get_string, helpers
 
 
@@ -23,7 +23,7 @@ async def helper_private(
             await update.answer()
         except:
             pass
-        chat_id = update.message.chat.id
+        chat_id = update.message.chat.id if hasattr(update, "message") else update.chat.id
         language = await get_lang(chat_id)
         _ = get_string(language)
         keyboard = help_pannel(_, True)
@@ -35,13 +35,12 @@ async def helper_private(
             await update.delete()
         except:
             pass
-        language = await get_lang(update.chat.id)
+        chat_id = update.chat.id if isinstance(update, types.Message) else update.message.chat.id
+        language = await get_lang(chat_id)
         _ = get_string(language)
         keyboard = help_pannel(_)
-        await update.reply_photo(
-            photo=START_IMG_URL,
-            caption=_["help_1"].format(SUPPORT_CHAT),
-            reply_markup=keyboard,
+        await update.reply(
+            _["help_1"].format(SUPPORT_CHAT), reply_markup=keyboard
         )
 
 
