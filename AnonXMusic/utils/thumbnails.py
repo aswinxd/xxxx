@@ -24,7 +24,7 @@ def clear(text):
     list = text.split(" ")
     title = ""
     for i in list:
-        if len(title) + len(i) < 60:
+        if len(title) + len(i) < 70:
             title += " " + i
     return title.strip()
 
@@ -71,8 +71,15 @@ async def get_thumb(videoid):
         enhancer = ImageEnhance.Brightness(background)
         background = enhancer.enhance(0.5)
         draw = ImageDraw.Draw(background)
-        arial = ImageFont.truetype("AnonXMusic/assets/font2.ttf", 50)  # Increase font size
-        font = ImageFont.truetype("AnonXMusic/assets/font.ttf", 50)  # Increase font size
+        
+        # Define larger font sizes for each text
+        powered_by_font = ImageFont.truetype("AnonXMusic/assets/font.ttf", 80)
+        arial = ImageFont.truetype("AnonXMusic/assets/font2.ttf", 60)  # Increase font size
+        font = ImageFont.truetype("AnonXMusic/assets/font.ttf", 60)  # Increase font size
+        
+        # Draw "Powered by YouTube" text on the top left corner
+        draw.text((20, 20), "Powered by YouTube", fill="white", font=powered_by_font)
+        
         draw.text((1110, 8), unidecode(app.name), fill="white", font=arial)
         draw.text(
             (55, 560),
