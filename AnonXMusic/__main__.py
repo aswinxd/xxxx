@@ -68,7 +68,6 @@ async def clone_bot(bot_token):
         await new_bot.start()
         LOGGER("AnonXMusic").info("Cloned bot started successfully.")
         await setup_new_bot(new_bot)  # Perform setup for the new bot
-        await new_bot.idle()  # Start the event loop for the new bot
     except Exception as e:
         LOGGER("AnonXMusic").error(f"Error cloning bot: {str(e)}")
 
