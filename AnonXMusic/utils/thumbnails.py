@@ -120,8 +120,8 @@ async def get_thumb(videoid):
             font=small_font,
         )
         # Adding MongoDB and YouTube logos
-        mongodb_logo = Image.open("path_to_mongodb_logo.png")
-        youtube_logo = Image.open("path_to_youtube_logo.png")
+        mongodb_logo = Image.open("AnonXMusic/mongo.png.lnk")
+        youtube_logo = Image.open("AnonXMusic/yt.png.lnk")
         background.paste(mongodb_logo, (10, 700), mongodb_logo)
         background.paste(youtube_logo, (10 + mongodb_logo.width + 10, 700), youtube_logo)
 
