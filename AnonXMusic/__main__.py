@@ -1,8 +1,9 @@
 import asyncio
 import importlib
+import sys
 
-from pyrogram import idle, Client, filters
-from pyrogram.types import Message
+from pyrogram import idle
+from pytgcalls.exceptions import NoActiveGroupCall
 
 import config
 from AnonXMusic import LOGGER, app, userbot
@@ -12,7 +13,7 @@ from AnonXMusic.plugins import ALL_MODULES
 from AnonXMusic.utils.database import get_banned_users, get_gbanned
 from config import BANNED_USERS
 
-async def init():
+async def init(token=None):
     if (
         not config.STRING1
         and not config.STRING2
@@ -32,7 +33,10 @@ async def init():
             BANNED_USERS.add(user_id)
     except:
         pass
-    await app.start()
+    
+    # Initialize the bot with the provided token or the default token
+    await app.start(token=token if token else config.API_ID)
+    
     for all_module in ALL_MODULES:
         importlib.import_module("AnonXMusic.plugins" + all_module)
     LOGGER("AnonXMusic.plugins").info("Successfully Imported Modules...")
@@ -56,33 +60,22 @@ async def init():
     await userbot.stop()
     LOGGER("AnonXMusic").info("Stopping AnonX Music Bot...")
 
-async def clone_bot(bot_token):
-    try:
-        # Initialize a new client with the forwarded token
-        new_bot = Client(
-            "anonx_music_clone",
-            api_id=config.API_ID,
-            api_hash=config.API_HASH,
-            bot_token=bot_token
-        )
-        await new_bot.start()
-        LOGGER("AnonXMusic").info("Cloned bot started successfully.")
-        await setup_new_bot(new_bot)  # Perform setup for the new bot
-    except Exception as e:
-        LOGGER("AnonXMusic").error(f"Error cloning bot: {str(e)}")
+async def clone(update, context):
+    # Extract the token from the command arguments
+    if len(context.args) != 1:
+        await update.message.reply_text("Usage: /clone <token>")
+        return
+    token = context.args[0]
 
-async def setup_new_bot(bot):
-    # Add any additional setup or configuration for the new bot here
-    pass
-
-@app.on_message(filters.command("clone") & filters.private)
-async def clone_command(client, message: Message):
-    if len(message.command) == 2:
-        bot_token = message.command[1]
-        await message.reply("Cloning the bot...")
-        await clone_bot(bot_token)
-    else:
-        await message.reply("Invalid syntax. Please use /clone <bot_token>.")
+    # Run initialization with the provided token
+    await init(token)
+    await update.message.reply_text("Bot successfully cloned!")
 
 if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(init())
+    # Check if a token is provided as an argument
+    if len(sys.argv) == 2:
+        token = sys.argv[1]
+    else:
+        token = None
+
+    asyncio.get_event_loop().run_until_complete(init(token))
