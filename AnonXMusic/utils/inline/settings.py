@@ -100,12 +100,6 @@ def playmode_users_markup(
                 text=_["ST_B_8"] if Playtype == True else _["ST_B_9"],
                 callback_data="PLAYTYPECHANGE",
             ),
-        ],
-        [
-            InlineKeyboardButton(
-                text=_["BACK_BUTTON"],
-                callback_data="settings_helper",
-            ),
             InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close"),
         ],
     ]
