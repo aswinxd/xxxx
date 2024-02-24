@@ -24,10 +24,6 @@ def private_panel(_):
                 url=f"https://t.me/{app.username}?startgroup=true",
             )
         ],
-        [
-            InlineKeyboardButton(text=_["ST_B_3"], callback_data="PM"),
-            InlineKeyboardButton(text=_["S_B_2"], url=config.SUPPORT_CHAT),
-        ],
-        [InlineKeyboardButton(text=_["S_B_4"], callback_data="help_callback hb1")],
+        [InlineKeyboardButton(text=_["S_B_4"], callback_data="settings_back_helper")],
     ]
     return buttons
