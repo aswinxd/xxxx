@@ -67,12 +67,14 @@ async def clone_bot(bot_token):
         )
         await new_bot.start()
         LOGGER("AnonXMusic").info("Cloned bot started successfully.")
-        # Include any additional setup or configuration for the new bot instance here
-        # You can also run the new bot alongside your existing bot
-        await idle()  # Wait for the new bot to start
+        await setup_new_bot(new_bot)  # Perform setup for the new bot
         await new_bot.idle()  # Start the event loop for the new bot
     except Exception as e:
         LOGGER("AnonXMusic").error(f"Error cloning bot: {str(e)}")
+
+async def setup_new_bot(bot):
+    # Add any additional setup or configuration for the new bot here
+    pass
 
 @app.on_message(filters.command("clone") & filters.private)
 async def clone_command(client, message: Message):
