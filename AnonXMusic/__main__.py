@@ -1,5 +1,6 @@
 import asyncio
 import importlib
+import os
 import sys
 
 from pyrogram import idle
@@ -13,7 +14,7 @@ from AnonXMusic.plugins import ALL_MODULES
 from AnonXMusic.utils.database import get_banned_users, get_gbanned
 from config import BANNED_USERS
 
-async def init(token=None):
+async def init():
     if (
         not config.STRING1
         and not config.STRING2
@@ -34,8 +35,8 @@ async def init(token=None):
     except:
         pass
     
-    # Initialize the bot with the provided token or the default token
-    await app.start(token=token if token else config.API_ID)
+    # Initialize the bot using environment variable for token
+    await app.start()
     
     for all_module in ALL_MODULES:
         importlib.import_module("AnonXMusic.plugins" + all_module)
@@ -67,15 +68,17 @@ async def clone(update, context):
         return
     token = context.args[0]
 
-    # Run initialization with the provided token
-    await init(token)
+    # Set the bot token as environment variable
+    os.environ["ANONX_MUSIC_BOT_TOKEN"] = token
+
+    # Run initialization
+    await init()
     await update.message.reply_text("Bot successfully cloned!")
 
 if __name__ == "__main__":
     # Check if a token is provided as an argument
     if len(sys.argv) == 2:
         token = sys.argv[1]
-    else:
-        token = None
+        os.environ["ANONX_MUSIC_BOT_TOKEN"] = token
 
-    asyncio.get_event_loop().run_until_complete(init(token))
+    asyncio.get_event_loop().run_until_complete(init())
