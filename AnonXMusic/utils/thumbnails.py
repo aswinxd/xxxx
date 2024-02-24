@@ -71,9 +71,8 @@ async def get_thumb(videoid):
         enhancer = ImageEnhance.Brightness(background)
         background = enhancer.enhance(0.5)
         draw = ImageDraw.Draw(background)
-        arial = ImageFont.truetype("AnonXMusic/assets/font2.ttf", 30)  # Previous font size
-        font = ImageFont.truetype("AnonXMusic/assets/font.ttf", 30)  # Previous font size
-        small_font = ImageFont.truetype("AnonXMusic/assets/font.ttf", 20)  # Small font size
+        arial = ImageFont.truetype("AnonXMusic/assets/font2.ttf", 40)  # Increase font size
+        font = ImageFont.truetype("AnonXMusic/assets/font.ttf", 40)  # Increase font size
         draw.text((1110, 8), unidecode(app.name), fill="white", font=arial)
         draw.text(
             (55, 560),
@@ -89,19 +88,19 @@ async def get_thumb(videoid):
         )
         draw.line(
             [(55, 660), (1220, 660)],
-            fill="white",
+            fill="blue",
             width=5,
             joint="curve",
         )
         draw.ellipse(
             [(918, 648), (942, 672)],
-            outline="white",
-            fill="white",
+            outline="blue",
+            fill="blue",
             width=15,
         )
         draw.text(
             (36, 685),
-            "00:48",
+            "05:48",
             (255, 255, 255),
             font=arial,
         )
@@ -111,20 +110,6 @@ async def get_thumb(videoid):
             (255, 255, 255),
             font=arial,
         )
-        # Adding "Powered by Xenon, YouTube, and MongoDB" text
-        powered_by_text = "Powered by Xenon, YouTube, and MongoDB"
-        draw.text(
-            (10, 680),
-            powered_by_text,
-            (255, 255, 255),
-            font=small_font,
-        )
-        # Adding MongoDB and YouTube logos
-        mongodb_logo = Image.open("AnonXMusic/mongo.png.lnk")
-        youtube_logo = Image.open("AnonXMusic/yt.png.lnk")
-        background.paste(mongodb_logo, (10, 700), mongodb_logo)
-        background.paste(youtube_logo, (10 + mongodb_logo.width + 10, 700), youtube_logo)
-
         try:
             os.remove(f"cache/thumb{videoid}.png")
         except:
