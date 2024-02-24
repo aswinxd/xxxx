@@ -88,19 +88,19 @@ async def get_thumb(videoid):
         )
         draw.line(
             [(55, 660), (1220, 660)],
-            fill="white",
+            fill="blue",
             width=5,
             joint="curve",
         )
         draw.ellipse(
             [(918, 648), (942, 672)],
-            outline="white",
-            fill="white",
+            outline="blue",
+            fill="blue",
             width=15,
         )
         draw.text(
             (36, 685),
-            "00:00",
+            "05:48",
             (255, 255, 255),
             font=arial,
         )
