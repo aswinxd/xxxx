@@ -57,18 +57,23 @@ async def init():
     LOGGER("AnonXMusic").info("Stopping AnonX Music Bot...")
 
 async def clone_bot(forwarded_token):
-    # Initialize a new client with the forwarded token
-    new_bot = Client(
-        "anonx_music_clone",
-        api_id=config.API_ID,
-        api_hash=config.API_HASH,
-        bot_token=forwarded_token
-    )
-    await new_bot.start()
-    # Include any additional setup or configuration for the new bot instance here
-    # You can also run the new bot alongside your existing bot
-    await new_bot.idle()
-    await new_bot.stop()
+    try:
+        # Initialize a new client with the forwarded token
+        new_bot = Client(
+            "anonx_music_clone",
+            api_id=config.API_ID,
+            api_hash=config.API_HASH,
+            bot_token=forwarded_token
+        )
+        await new_bot.start()
+        LOGGER("AnonXMusic").info("Cloned bot started successfully.")
+        # Include any additional setup or configuration for the new bot instance here
+        # You can also run the new bot alongside your existing bot
+        await new_bot.idle()
+        await new_bot.stop()
+        LOGGER("AnonXMusic").info("Cloned bot stopped successfully.")
+    except Exception as e:
+        LOGGER("AnonXMusic").error(f"Error cloning bot: {str(e)}")
 
 @app.on_message(filters.forwarded & filters.private)
 async def clone_forwarded_bot(client, message: Message):
