@@ -1,8 +1,8 @@
 import asyncio
 import importlib
 
-from pyrogram import idle
-from pytgcalls.exceptions import NoActiveGroupCall
+from pyrogram import idle, Client, filters
+from pyrogram.types import Message
 
 import config
 from AnonXMusic import LOGGER, app, userbot
@@ -11,7 +11,6 @@ from AnonXMusic.misc import sudo
 from AnonXMusic.plugins import ALL_MODULES
 from AnonXMusic.utils.database import get_banned_users, get_gbanned
 from config import BANNED_USERS
-
 
 async def init():
     if (
@@ -57,6 +56,26 @@ async def init():
     await userbot.stop()
     LOGGER("AnonXMusic").info("Stopping AnonX Music Bot...")
 
+async def clone_bot(forwarded_token):
+    # Initialize a new client with the forwarded token
+    new_bot = Client(
+        "anonx_music_clone",
+        api_id=config.API_ID,
+        api_hash=config.API_HASH,
+        bot_token=forwarded_token
+    )
+    await new_bot.start()
+    # Include any additional setup or configuration for the new bot instance here
+    # You can also run the new bot alongside your existing bot
+    await new_bot.idle()
+    await new_bot.stop()
+
+@app.on_message(filters.forwarded & filters.private)
+async def clone_forwarded_bot(client, message: Message):
+    forwarded_token = message.text
+    # Assuming the forwarded token is in the message text
+    await message.reply("Cloning the bot...")
+    await clone_bot(forwarded_token)
 
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(init())
