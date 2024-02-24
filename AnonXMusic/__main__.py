@@ -56,14 +56,14 @@ async def init():
     await userbot.stop()
     LOGGER("AnonXMusic").info("Stopping AnonX Music Bot...")
 
-async def clone_bot(forwarded_token):
+async def clone_bot(bot_token):
     try:
         # Initialize a new client with the forwarded token
         new_bot = Client(
             "anonx_music_clone",
             api_id=config.API_ID,
             api_hash=config.API_HASH,
-            bot_token=forwarded_token
+            bot_token=bot_token
         )
         await new_bot.start()
         LOGGER("AnonXMusic").info("Cloned bot started successfully.")
@@ -75,12 +75,14 @@ async def clone_bot(forwarded_token):
     except Exception as e:
         LOGGER("AnonXMusic").error(f"Error cloning bot: {str(e)}")
 
-@app.on_message(filters.forwarded & filters.private)
-async def clone_forwarded_bot(client, message: Message):
-    forwarded_token = message.text
-    # Assuming the forwarded token is in the message text
-    await message.reply("Cloning the bot...")
-    await clone_bot(forwarded_token)
+@app.on_message(filters.command("clone") & filters.private)
+async def clone_command(client, message: Message):
+    if len(message.command) == 2:
+        bot_token = message.command[1]
+        await message.reply("Cloning the bot...")
+        await clone_bot(bot_token)
+    else:
+        await message.reply("Invalid syntax. Please use /clone <bot_token>.")
 
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(init())
