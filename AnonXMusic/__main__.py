@@ -3,7 +3,7 @@ import importlib
 import os
 import sys
 
-from pyrogram import idle
+from pyrogram import idle, filters
 from pytgcalls.exceptions import NoActiveGroupCall
 
 import config
@@ -61,19 +61,31 @@ async def init():
     await userbot.stop()
     LOGGER("AnonXMusic").info("Stopping AnonX Music Bot...")
 
-async def clone(update, context):
+@app.on_message(filters.command("clone") & filters.private)
+async def clone_command(client, message):
     # Extract the token from the command arguments
-    if len(context.args) != 1:
-        await update.message.reply_text("Usage: /clone <token>")
+    if len(message.command) != 2:
+        await message.reply_text("Usage: /clone <token>")
         return
-    token = context.args[0]
+    token = message.command[1]
 
     # Set the bot token as environment variable
     os.environ["ANONX_MUSIC_BOT_TOKEN"] = token
 
     # Run initialization
     await init()
-    await update.message.reply_text("Bot successfully cloned!")
+    await message.reply_text("Bot successfully cloned!")
+
+async def main():
+    # Check if a token is provided as an argument
+    if len(sys.argv) == 2:
+        token = sys.argv[1]
+        os.environ["ANONX_MUSIC_BOT_TOKEN"] = token
+
+    await asyncio.gather(
+        init(),
+        idle(),
+    )
 
 if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(init())
+    asyncio.run(main())
