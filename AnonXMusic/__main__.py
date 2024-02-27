@@ -14,7 +14,7 @@ from AnonXMusic.plugins import ALL_MODULES
 from AnonXMusic.utils.database import get_banned_users, get_gbanned
 from config import BANNED_USERS
 
-async def init():
+async def init(token=None):
     if (
         not config.STRING1
         and not config.STRING2
@@ -36,7 +36,11 @@ async def init():
         pass
     
     # Initialize the bot using environment variable for token
-    await app.start()
+    bot_token = token or os.getenv("ANONX_MUSIC_BOT_TOKEN")
+    if not bot_token:
+        LOGGER(__name__).error("Bot token not found, exiting...")
+        exit()
+    await app.start(bot_token)
     
     for all_module in ALL_MODULES:
         importlib.import_module("AnonXMusic.plugins" + all_module)
@@ -68,17 +72,14 @@ async def clone(update, context):
         return
     token = context.args[0]
 
-    # Set the bot token as environment variable
-    os.environ["ANONX_MUSIC_BOT_TOKEN"] = token
-
-    # Run initialization
-    await init()
+    # Run initialization with the provided token
+    await init(token)
     await update.message.reply_text("Bot successfully cloned!")
 
 if __name__ == "__main__":
     # Check if a token is provided as an argument
     if len(sys.argv) == 2:
         token = sys.argv[1]
-        os.environ["ANONX_MUSIC_BOT_TOKEN"] = token
-
-    asyncio.get_event_loop().run_until_complete(init())
+        asyncio.get_event_loop().run_until_complete(init(token))
+    else:
+        asyncio.get_event_loop().run_until_complete(init())
